@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A quick overview of project ownership, status, activity, and priority.">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <p class="dashboard-eyebrow">Team workspace</p>
+        <h1 class="dashboard-title">Project Pulse</h1>
+        <p class="dashboard-intro">A clear view of what the team is building, who is moving it forward, and where attention is needed.</p>
+      </header>
+
+      <section aria-label="Project portfolio">
+        <div id="project-grid" class="project-grid" aria-live="polite">
+          <p class="dashboard-intro" role="status">Loading projects…</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const projectGrid = document.querySelector("#project-grid");
+      const requiredFields = ["name", "owner", "status", "recentActivity", "priority", "summary"];
+
+      function addTextElement(parent, tagName, className, text) {
+        const element = document.createElement(tagName);
+        if (className) element.className = className;
+        element.textContent = text;
+        parent.append(element);
+        return element;
+      }
+
+      function classToken(value) {
+        return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      }
+
+      function renderProject(project) {
+        const card = document.createElement("article");
+        card.className = "project-card";
+
+        const header = document.createElement("header");
+        header.className = "project-card-header";
+        const titleGroup = document.createElement("div");
+        addTextElement(titleGroup, "h2", "project-card-title", project.name);
+        addTextElement(titleGroup, "p", "project-card-owner", `Owner: ${project.owner}`);
+        header.append(titleGroup);
+
+        const badges = document.createElement("div");
+        badges.className = "project-card-meta";
+        addTextElement(
+          badges,
+          "span",
+          `badge status-badge status-${classToken(project.status)}`,
+          `Status: ${project.status}`
+        );
+        addTextElement(
+          badges,
+          "span",
+          `badge priority-badge priority-${classToken(project.priority)}`,
+          `Priority: ${project.priority}`
+        );
+        header.append(badges);
+        card.append(header);
+
+        addTextElement(card, "p", "project-card-summary", project.summary);
+
+        const activity = document.createElement("p");
+        activity.className = "project-card-activity";
+        addTextElement(activity, "span", "project-card-activity-label", "Recent activity");
+        addTextElement(activity, "span", "project-card-activity-text", project.recentActivity);
+        card.append(activity);
+
+        return card;
+      }
+
+      async function loadProjects() {
+        try {
+          const response = await fetch("project-data.json");
+          if (!response.ok) throw new Error(`Request failed (${response.status})`);
+
+          const data = await response.json();
+          if (!data || !Array.isArray(data.projects)) {
+            throw new Error("Project data must contain a projects array.");
+          }
+
+          if (data.projects.some((project) =>
+            !project || requiredFields.some((field) =>
+              typeof project[field] !== "string" || !project[field].trim()
+            )
+          )) {
+            throw new Error("One or more projects are missing required details.");
+          }
+
+          projectGrid.replaceChildren();
+          if (data.projects.length === 0) {
+            addTextElement(projectGrid, "p", "dashboard-intro", "No projects to show yet.");
+            return;
+          }
+
+          for (const project of data.projects) {
+            projectGrid.append(renderProject(project));
+          }
+        } catch (error) {
+          projectGrid.replaceChildren();
+          addTextElement(
+            projectGrid,
+            "p",
+            "dashboard-intro",
+            "Projects couldn’t be loaded. Please try again later."
+          ).setAttribute("role", "alert");
+          console.error("Unable to load project data:", error);
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "projects": [
+    {
+      "name": "Contributor Onboarding",
+      "owner": "Mona Patel",
+      "status": "Active",
+      "recentActivity": "Published the revised setup guide and welcomed three new contributors.",
+      "priority": "High",
+      "summary": "Make the first contribution easier with clearer setup instructions and a welcoming path through the repository."
+    },
+    {
+      "name": "Release Readiness",
+      "owner": "Jordan Lee",
+      "status": "At risk",
+      "recentActivity": "Found two release-blocking issues during the latest regression pass.",
+      "priority": "High",
+      "summary": "Coordinate final quality checks and unblock the next stable release."
+    },
+    {
+      "name": "Design System Refresh",
+      "owner": "Avery Chen",
+      "status": "Planning",
+      "recentActivity": "Collected feedback from product teams and drafted the component inventory.",
+      "priority": "Medium",
+      "summary": "Bring shared interface patterns up to date while keeping the experience consistent across products."
+    },
+    {
+      "name": "Usage Insights",
+      "owner": "Sam Rivera",
+      "status": "Active",
+      "recentActivity": "Added weekly engagement trends to the internal analytics preview.",
+      "priority": "Low",
+      "summary": "Help teams understand how customers use key features through a small, privacy-conscious insights dashboard."
+    }
+  ]
+}
